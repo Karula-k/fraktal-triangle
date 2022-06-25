@@ -3,10 +3,9 @@ import tkinter as tk
 import math
 import threading
 
-threads = []
 #fungsi untuk menggambar segitiga, cnv adalah tkinter,level untuk kedalaman segitiganya,curlvl adalah level sekarang
-#panjang dijadikan patokan ukuran setiap segitiga, titik A titik permulaan, sudut(jenis dari segitiga yang akan digambar) 
-def gambar_segitiga(cnv, lvl, curlvl, panjang, titikA,sudut):
+#panjang dijadikan patokan ukuran setiap segitiga, titik A titik permulaan, jenis(jenis dari segitiga yang akan digambar) 
+def gambar_segitiga(cnv, lvl, curlvl, panjang, titikA,jenis):
     #mengambil nilai x dari A
     Ax = titikA[0]
     #mengambil nilai y dari A
@@ -30,18 +29,18 @@ def gambar_segitiga(cnv, lvl, curlvl, panjang, titikA,sudut):
         cnv.create_line(Ax+Bx, Ay+By, Ax+Cx, Ay+Cy)#membuat garis bawah
 
         #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis kanan
-        t = threading.Thread(target=gambar_segitiga, args=(cnv,lvl,curlvl+1,panjang/3,(middlefinder(panjang,60)[0]+Ax,middlefinder(panjang,60)[1]+Ay),0))
-        threads.append(t)
+        threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(middlefinder(panjang,60)[0]+Ax,middlefinder(panjang,60)[1]+Ay),0)).start()
+        # gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(middlefinder(panjang,60)[0]+Ax,middlefinder(panjang,60)[1]+Ay),0)
         #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis bawah
-        t2 = threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(Ax,Ay+By),270))
-        threads.append(t2)
+        threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(Ax,Ay+By),270)).start()
+        # gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(Ax,Ay+By),270)
         #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis kiri
-        t3 = threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(Ax-middlefinder(panjang,-60)[0],Ay-middlefinder(panjang,-60)[1]),180))
-        threads.append(t3)
+        threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(Ax-middlefinder(panjang,-60)[0],Ay-middlefinder(panjang,-60)[1]),180)).start()
+        # gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(Ax-middlefinder(panjang,-60)[0],Ay-middlefinder(panjang,-60)[1]),180)
     #mengecek apakah level saat ini sudah sesuai sama dengan level yang dibutuhkan
     elif(curlvl <=lvl):
-        #jika jenis sudut adalah 0
-        if sudut ==0:
+        #jika jenis jenis adalah 0
+        if jenis ==0:
             #cnv.create_text(Ax, Ay, text='A')
             #membuat panjang titik bx dan dimiringkan
             Bx = math.cos( math.radians(60) ) * panjang/2
@@ -58,13 +57,11 @@ def gambar_segitiga(cnv, lvl, curlvl, panjang, titikA,sudut):
             cnv.create_line(Ax+Cx,Ay+Cy,Ax+panjang*3/4,Ay-By)#membuat garis kiri dengan panjang dikali 3/4 dari panjang a (karena garis ditarik bukan dari c)
             cnv.create_line(Ax+Bx, Ay+By, Ax+Cx, Ay+Cy)#membuat garis bawah
             #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis atas
-            t = threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(Ax+Cx,Ay-By),90))
-            threads.append(t)
+            gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(Ax+Cx,Ay-By),90)
             #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis samping bawah
-            t2 = threading.Thread(target=gambar_segitiga,arg=(cnv,lvl,curlvl+1,panjang/3,(Ax+panjang/2,Ay),150))
-            threads.append(t2)
-        #jika jenis sudut adalah 30
-        elif sudut==30:
+            gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(Ax+panjang/2,Ay),150)
+        #jika jenis jenis adalah 30
+        elif jenis==30:
             #cnv.create_text(Ax, Ay, text='A')
             #membuat panjang titik bx dan dimiringkan
             Bx = math.cos( math.radians(60) ) * panjang/2
@@ -80,13 +77,12 @@ def gambar_segitiga(cnv, lvl, curlvl, panjang, titikA,sudut):
             cnv.create_line(Ax+Bx,Ay+By,Ax+Cx-panjang,Ay+Cy)#membuat garis kiri
             cnv.create_line(Ax+Cx, Ay+Cy, Ax+Bx, Ay+By)#membuat garis bawah
             #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis atas kiri
-            t = threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(Ax-Bx-middlefinder(panjang,-60)[0],Ay),180))
-            threads.append(t)
+            
+            gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(Ax-Bx-middlefinder(panjang,-60)[0],Ay),180)
             #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis bawah
-            t2 = threading.Thread(cnv,lvl,curlvl+1,panjang/3,(Ax-Cx,Ay+By),270)
-            threads.append(t2)
-        #jika jenis sudut adalah 90
-        elif sudut==90:
+            gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(Ax-Cx,Ay+By),270)
+        #jika jenis jenis adalah 90
+        elif jenis==90:
             #cnv.create_text(Ax, Ay, text='A')
             #membuat panjang titik bx dan dimiringkan
             Bx = math.cos( math.radians(60) ) * panjang
@@ -103,13 +99,11 @@ def gambar_segitiga(cnv, lvl, curlvl, panjang, titikA,sudut):
             cnv.create_line(Ax+Bx, Ay, Ax, Ay-Cy)#membuat garis kiri
             cnv.create_line(Ax+Bx, Ay, Ax+Cx, Ay)#membuat garis bawah
             #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis kiri
-            t = threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(middlefinder(panjang,60)[0]+Ax,middlefinder(panjang,60)[1]+Ay-By),0))
-            threads.append(t)
+            gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(middlefinder(panjang,60)[0]+Ax,middlefinder(panjang,60)[1]+Ay-By),0)
             #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis kanan
-            t2 = threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(Ax-middlefinder(panjang,-60)[0],Ay-By-middlefinder(panjang,-60)[1]),180))
-            threads.append(t2)
-        #jika jenis sudut adalah 150
-        elif sudut==150:
+            gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(Ax-middlefinder(panjang,-60)[0],Ay-By-middlefinder(panjang,-60)[1]),180)
+        #jika jenis jenis adalah 150
+        elif jenis==150:
             #cnv.create_text(Ax, Ay, text='A')
             #membuat panjang titik bx dan dimiringkan dibagi dua dikarenakan nilai nya diambil dati titik pusat a
             Bx = math.cos( math.radians(120) ) * panjang/2
@@ -125,14 +119,12 @@ def gambar_segitiga(cnv, lvl, curlvl, panjang, titikA,sudut):
             cnv.create_line(Ax+Bx,Ay+By,Ax+Cx+panjang,Ay+Cy)#membuat garis kiri
             cnv.create_line(Ax+Cx, Ay+Cy, Ax+Bx, Ay+By)#membuat garis bawah
             #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis atas kanan
-            t = threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(middlefinder(panjang,60)[0]+Ax-Bx,middlefinder(panjang,60)[1]+Ay-By),0))
-            threads.append(t)
+            gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(middlefinder(panjang,60)[0]+Ax-Bx,middlefinder(panjang,60)[1]+Ay-By),0)      
             #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis bawah
-            t2 = threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(Ax-Cx,Ay+By),270))
-            threads.append(t2)
+            gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(Ax-Cx,Ay+By),270)
 
-        #jika jenis sudut adalah 180
-        elif sudut ==180:
+        #jika jenis jenis adalah 180
+        elif jenis ==180:
             #cnv.create_text(Ax, Ay, text='A')
             #membuat panjang titik bx dan dimiringkan dibagi dua dikarenakan nilai nya diambil dati titik pusat a
             Bx = math.cos( math.radians(120) ) * panjang/2
@@ -149,13 +141,10 @@ def gambar_segitiga(cnv, lvl, curlvl, panjang, titikA,sudut):
             cnv.create_line(Ax+Cx,Ay+Cy,Ax-panjang*3/4,Ay-By)#membuat garis kiri dengan panjang dikali 3/4 dari panjang a (karena garis ditarik bukan dari c) 
             cnv.create_line(Ax+Bx, Ay+By, Ax+Cx, Ay+Cy)#membuat garis bawah
             #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis atas
-
-            t = threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(Ax+Cx,Ay-By),90))
-            threads.append(t)
+            gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(Ax+Cx,Ay-By),90)
             #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis kiri bawah
-            t2 = threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(Ax-panjang/2,Ay),30))
-            threads.append(t2)
-        #jika jenis sudut adalah 270
+            gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(Ax-panjang/2,Ay),30)
+        #jika jenis jenis adalah 270
         elif(270):
             #cnv.create_text(Ax, Ay, text='A')
             Bx = math.cos( math.radians(60) ) * panjang
@@ -172,11 +161,9 @@ def gambar_segitiga(cnv, lvl, curlvl, panjang, titikA,sudut):
             cnv.create_line(Ax+Cx, Ay, Ax, Ay+By)#membuat garis kiri
             cnv.create_line(Ax+Bx, Ay, Ax, Ay+Cy)#membuat garis bawah
             #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis kiri
-            t = threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,(Ax+Cx/2,Ay+By/2),30))
-            threads.append(t)
+            gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,(Ax+Cx/2,Ay+By/2),30)
             #merekrusif setiap bagian agar menggambar segitiga dari nilai titik A di garis kanan
-            t2 = threading.Thread(target=gambar_segitiga,args=(cnv,lvl,curlvl+1,panjang/3,((Ax+Bx/2,Ay+By/2)),150))
-            threads.append(t2)
+            gambar_segitiga(cnv,lvl,curlvl+1,panjang/3,((Ax+Bx/2,Ay+By/2)),150)
     #jika tidak ada maka stop dari rekrusif
     else:
         return
@@ -195,12 +182,6 @@ window = tk.Tk()
 #membuat kanvas dengan ukuran 1000 x 500
 cnv = tk.Canvas(window, width=1000, height=500)
 #memastikan tkinrter menjadi 1 kesatuan
-gambar_segitiga(cnv, lvl, 1, panjang, (Ax, Ay),0)
-for t in threads:
-	t.start()
-
-for t in threads:
-	t.join()
 cnv.pack()
 #panjang awal
 panjang = 350
@@ -208,7 +189,7 @@ panjang = 350
 Ax = 500
 Ay = 0
 
-#memanggil funsgi recrusive segitiga
-
+# threading.Thread(target=gambar_segitiga,args=(cnv, lvl, 1, panjang, (Ax, Ay),0)).start()
+gambar_segitiga(cnv, lvl, 1, panjang, (Ax, Ay),0)
 #memastikan tkinter terus berjalan
 window.mainloop()
